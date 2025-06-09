@@ -22,6 +22,7 @@ import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
+import javax.swing.JList;
 
 public class AddTenant extends JFrame {
 	
@@ -222,10 +223,14 @@ public class AddTenant extends JFrame {
 		String firstName = textField.getText();
 		String lastName = textField_1.getText();
 		String deposit = textField_deposit.getText();
+		float depositF = Float.parseFloat(deposit);
 		String email = textField_email.getText();
 		String roomnum = textField_roomnumber.getText();
+		int roomnumInt = Integer.parseInt(roomnum);
 		Date movein = (Date) spinner.getValue();
+		java.sql.Date sqlmovein = new java.sql.Date(movein.getTime());
 		Date moveout = (Date) spinner2.getValue();
+		java.sql.Date sqlmoveout = new java.sql.Date(moveout.getTime());
 		
 		boolean inputKey = true;
 		//check is this tenant already exit or is the room already rent out
@@ -258,12 +263,20 @@ public class AddTenant extends JFrame {
 				//insert into contract table
 				String sqlContract = "INSERT INTO contract (deposit, move_in_date, move_out_date, status, amount) VALUES (?,?,?,?,?)";
 				//We have to find some value automatically
-				Object amountobject = db.search(roomnum, "tenant" , "room_number", "rent_amount");
+				Object amountobject = db.search(roomnumInt, "room" , "room_number", "rent_amount");
+				//problem here
 				float amount= 0;
 				if(amountobject instanceof Float) {
 					amount = (Float) amountobject;
 				}
 				PreparedStatement pstmtContract = db.myconn.prepareStatement(sqlContract);
+				pstmtContract.setFloat(1, depositF);
+				pstmtContract.setDate(2, sqlmovein);
+				pstmtContract.setDate(3, sqlmoveout);
+				pstmtContract.setString(4, "Active");
+				pstmtContract.setFloat(5, amount);
+				
+				boolean isinsert2 = db.insert(pstmtContract);
 			}
 			
 			

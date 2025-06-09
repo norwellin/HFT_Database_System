@@ -45,7 +45,8 @@ public class DatabaseManage{
 	//Search
 	public Object search(Object o, String tableName, String colName, String targetCol) throws SQLException {
 		
-		String sql = "SELECT" + targetCol +"FROM " + tableName + " WHERE " + colName + " = ? ";
+		String sql = "SELECT " + targetCol +" FROM " + tableName + " WHERE " + colName + " = ?";
+		System.out.println(sql);
 		Object rso = 1;
 		Connection conn = this.getConnection();
 		try(PreparedStatement pstmt = this.myconn.prepareStatement(sql)){
