@@ -1,43 +1,42 @@
 package databaseTest;
 
-import java.sql.*;
-public class Test {
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+public class Test extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+
+	/**
+	 * Launch the application.
+	 */
 	public static void main(String[] args) {
-        String url = "jdbc:mysql://localhost:3306/testdb"; // 資料庫 URL
-        String username = "root"; // 預設帳號
-        String password = "";     // XAMPP 預設無密碼（可到 phpMyAdmin 設定）
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Test frame = new Test();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
-        try {
-            // 載入 JDBC 驅動
-            Class.forName("com.mysql.cj.jdbc.Driver");
+	/**
+	 * Create the frame.
+	 */
+	public Test() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-            // 建立連線
-            Connection conn = DriverManager.getConnection(url, username, password);
-            System.out.println("資料庫連線成功！");
+		setContentPane(contentPane);
+	}
 
-            //insert
-            Statement stmt1 = conn.createStatement();
-            String sql = "INSERT INTO users (ID, Name, Email) VALUES (1, 'Norwell', '42lich1mst@hft-stuttgart.de')";
-            stmt1.executeUpdate(sql);
-            // 執行查詢
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM users");
-            
-            
-
-            // 印出結果
-            while (rs.next()) {
-                System.out.println("ID: " + rs.getInt("id") +
-                                   ", Name: " + rs.getString("name") +
-                                   ", Email: " + rs.getString("email"));
-            }
-
-            // 關閉連線
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
