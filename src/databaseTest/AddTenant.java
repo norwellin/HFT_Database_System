@@ -18,6 +18,8 @@ import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.Date;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
@@ -33,6 +35,8 @@ public class AddTenant extends JFrame {
 	private JTextField textField_deposit = new JTextField(20);
 	private JTextField[] fields = {textField, textField_1, textField_email, textField_roomnumber, textField_deposit};
 	private JLabel message;
+	JSpinner spinner;
+	JSpinner spinner2;
 
 	/**
 	 * Launch the application.
@@ -153,7 +157,7 @@ public class AddTenant extends JFrame {
 		panel_2.add(textField_movein, "cell 1 3,growx");*/
 		// 建立日期模型
 		SpinnerDateModel model = new SpinnerDateModel();
-        JSpinner spinner = new JSpinner(model);
+        spinner = new JSpinner(model);
         spinner.setFont(new Font("Arial", Font.PLAIN, 24));
         spinner.setEditor(new JSpinner.DateEditor(spinner, "yyyy-MM-dd"));
         panel_2.add(spinner, "cell 1 3,growx");
@@ -163,7 +167,7 @@ public class AddTenant extends JFrame {
 		panel_2.add(lblNewLabel_2_2_1_4, "cell 0 4,alignx trailing");
 		
 		SpinnerDateModel model1 = new SpinnerDateModel();
-        JSpinner spinner2 = new JSpinner(model1);
+        spinner2 = new JSpinner(model1);
         spinner2.setFont(new Font("Arial", Font.PLAIN, 24));
         spinner2.setEditor(new JSpinner.DateEditor(spinner, "yyyy-MM-dd"));
         panel_2.add(spinner2, "cell 1 4,growx");
@@ -213,20 +217,56 @@ public class AddTenant extends JFrame {
 	protected void addTenant(ActionEvent e) throws SQLException {
 		// TODO Auto-generated method stub
 		DatabaseManage db = new DatabaseManage();
-		//check is this tenant already exit or is the room already rent out
+		
+		//get All values from columns
+		String firstName = textField.getText();
+		String lastName = textField_1.getText();
+		String deposit = textField_deposit.getText();
 		String email = textField_email.getText();
 		String roomnum = textField_roomnumber.getText();
+		Date movein = (Date) spinner.getValue();
+		Date moveout = (Date) spinner2.getValue();
+		
+		boolean inputKey = true;
+		//check is this tenant already exit or is the room already rent out
 		try {
 			if(db.exitSearch(email, "tenant", "email")) {
 				message.setText("This tenant is already exit.");
+				inputKey = false;
 			}
 			if(!db.exitSearch(roomnum, "room", "room_number")) {
 				message.setText("This room does not exist in the database.");
+				inputKey = false;
 			}
 			//check is all columns been filled
 			if(!checkAllFieldsFilled()) {
 				message.setText("Please fill in all blanks");
+				inputKey = false;
 			}
+			//If everything is validate than put it into database
+			//We have to insert into three tables
+			if(inputKey) {
+				//Insert to tenant table
+				String sqlTenant = "INSERT INTO tenant (first_name, last_name, email) VALUES (?,?,?)";
+				PreparedStatement pstmt = db.myconn.prepareStatement(sqlTenant);
+				pstmt.setString(1, firstName);
+				pstmt.setString(2, lastName);
+				pstmt.setString(3, email);
+				
+				boolean isinsert = db.insert(pstmt);
+				
+				//insert into contract table
+				String sqlContract = "INSERT INTO contract (deposit, move_in_date, move_out_date, status, amount) VALUES (?,?,?,?,?)";
+				//We have to find some value automatically
+				Object amountobject = db.search(roomnum, "tenant" , "room_number", "rent_amount");
+				float amount= 0;
+				if(amountobject instanceof Float) {
+					amount = (Float) amountobject;
+				}
+				PreparedStatement pstmtContract = db.myconn.prepareStatement(sqlContract);
+			}
+			
+			
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
