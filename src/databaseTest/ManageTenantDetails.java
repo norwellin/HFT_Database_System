@@ -10,6 +10,8 @@ import java.awt.Font;
 import java.awt.Color;
 import javax.swing.SpringLayout;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ManageTenantDetails extends JFrame {
 
@@ -53,12 +55,22 @@ public class ManageTenantDetails extends JFrame {
 		contentPane.add(lblPleaseSelectAn);
 		
 		JButton btnNewButton_1 = new JButton("<- Back");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				goToDashBoard(e);
+			}
+		});
 		sl_contentPane.putConstraint(SpringLayout.NORTH, btnNewButton_1, 0, SpringLayout.NORTH, lblPleaseSelectAn);
 		sl_contentPane.putConstraint(SpringLayout.WEST, btnNewButton_1, 0, SpringLayout.WEST, contentPane);
 		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 28));
 		contentPane.add(btnNewButton_1);
 		
 		JButton btnAddTenant = new JButton("Add Tenant");
+		btnAddTenant.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				goToAddTenantPage(e);
+			}
+		});
 		sl_contentPane.putConstraint(SpringLayout.NORTH, btnAddTenant, 57, SpringLayout.SOUTH, lblPleaseSelectAn);
 		sl_contentPane.putConstraint(SpringLayout.WEST, btnAddTenant, 216, SpringLayout.WEST, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, btnAddTenant, 121, SpringLayout.SOUTH, lblPleaseSelectAn);
@@ -81,6 +93,20 @@ public class ManageTenantDetails extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.EAST, btnRemoveTenant, 0, SpringLayout.EAST, btnAddTenant);
 		btnRemoveTenant.setFont(new Font("Arial", Font.PLAIN, 28));
 		contentPane.add(btnRemoveTenant);
+	}
+
+	protected void goToAddTenantPage(ActionEvent e) {
+		// TODO Auto-generated method stub
+		this.dispose();
+		AddTenant page = new AddTenant();
+		page.setVisible(true);
+	}
+
+	protected void goToDashBoard(ActionEvent e) {
+		// TODO Auto-generated method stub
+		this.dispose();
+		AdminDashboard page = new AdminDashboard();
+		page.setVisible(true);
 	}
 
 }
