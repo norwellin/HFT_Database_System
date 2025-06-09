@@ -31,7 +31,7 @@ public class MainFrame extends javax.swing.JFrame{
 	private JTextField email;
 	private JPasswordField password;
 	private JTextField status;
-
+	private DatabaseManage db;
 	/**
 	 * Launch the application.
 	 */
@@ -62,7 +62,13 @@ public class MainFrame extends javax.swing.JFrame{
         
         System.out.println("username: "+input_email+" password: "+input_password);
         
-        DatabaseManage db = new DatabaseManage();
+        
+		try {
+			this.db = new DatabaseManage();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -73,7 +79,7 @@ public class MainFrame extends javax.swing.JFrame{
    
         
         try {
-            conn = db.getConnection();
+            conn = this.db.myconn;
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, input_email); // (position sart from 1, variable)
             pstmt.setString(2, input_password);
@@ -93,7 +99,8 @@ public class MainFrame extends javax.swing.JFrame{
             
             if(key){
                 System.out.println("Login Success");
-                this.dispose();
+                MainFrame.this.dispose();
+                this.setVisible(!key);
                 AdminDashboard admin = new AdminDashboard();
                 admin.setVisible(true);
             }
